@@ -69,27 +69,22 @@ $bot = Cinch::Bot.new do
 			when 'quit', 'exit', 'die'
 				$bot.quit
 			when 'start'
-				$lasttime = Time.now.to_i
-				$timer = setInterval(60) {
-					$lasttime = Time.now.to_i
+				$timer = setInterval(15) {
 					$config[:forums].each { |forum|
 						Thread.new do
-							Nokogiri::HTML(open("http://www.cplusplus.com/forum/#{forum}/")).document.css('.C_forThread table')[2..-1].each { |elem|
-								begin
-									post_id = elem.attr('id')[9..-1]
-									post_title = elem.css('tr:nth-child(1) td a b').text
+							Nokogiri::HTML(open("http://www.cplusplus.com/forum/#{forum}/")).document.css('.C_forThread table').each { |elem|
+								post_id = elem.attr('id')[9..-1]
+								post_title = elem.css('tr:nth-child(1) td a b').text.strip
 
-									main_data_elem = elem.css('tr:nth-child(3) td')
-									# date_info_elem = main_data_elem.css('div span')
+								main_data_elem = elem.css('tr:nth-child(3) td')
+								# date_info_elem = main_data_elem.css('div span')
 
-									# date = Date.parse(date_info_elem.attr('title')).strftime('%s').to_i
-									replies = main_data_elem.children[2].text.strip().split(' ')[0][1..-1]
+								# date = Date.parse(date_info_elem.attr('title')).strftime('%s').to_i
+								replies = main_data_elem.children[2].text.strip().split(' ')[0][1..-1]
 
-									if replies == 'no' && !$ids.include?(post_id) then
-										$ids.push(post_id)
-										m.channel.notice("#{Format(:bold, "New post:")} http://www.cplusplus.com/forum/#{forum}/#{post_id}/ [ #{post_title.strip} ]")
-									end
-								rescue
+								if replies == 'no' && !$ids.include?(post_id) then
+									$ids.push(post_id)
+									m.channel.notice("#{Format(:bold, "New post:")} http://www.cplusplus.com/forum/#{forum}/#{post_id}/ [ #{post_title} ]")
 								end
 							}
 						end
