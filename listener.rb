@@ -37,7 +37,7 @@ def setInterval(delay)
 	end
 end
 
-load './config'
+load 'config.rb'
 
 Format = Cinch::Formatting.method('format')
 

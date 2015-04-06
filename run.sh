@@ -24,5 +24,5 @@
 # SOFTWARE.
 #
 
-nohup ./listener.rb > log 2>&1 &
+nohup ./listener.rb > listener.log 2>&1 &
 echo 'Done.'
