@@ -37,20 +37,11 @@ def setInterval(delay)
 	end
 end
 
-$config = {
-	:server => '',
-	:nick => '',
-	:realname => '',
-	:user => '',
-	:password => '',
-	:channels => [],
-	:admin => '',
-	:forums => ['beginner', 'windows', 'unices', 'general', 'lounge', 'jobs']
-}
+load './config'
 
 Format = Cinch::Formatting.method('format')
 
-$ids = Marshal.load(open(File.expand_path('ids')).read)
+$ids = Marshal.load(File.exists?('ids.bin') ? open('ids.bin').read : "\x04\b[\x00")
 
 $bot = Cinch::Bot.new do
 	configure do |c|
@@ -84,14 +75,16 @@ $bot = Cinch::Bot.new do
 
 								if replies == 'no' && !$ids.include?(post_id) then
 									$ids.push(post_id)
-									m.channel.notice("#{Format(:bold, "New post:")} http://www.cplusplus.com/forum/#{forum}/#{post_id}/ [ #{post_title} ]")
+									m.channel.send("#{Format(:bold, "New post:")} http://www.cplusplus.com/forum/#{forum}/#{post_id}/ [ #{post_title} ]", true)
 								end
 							}
 						end
 					}
 				}
-			when 'stop'
+			when 'stop', 'shutup'
 				$timer.kill
+			when 'save', 'backup'
+				File.open('ids.bin', 'w') { |f| f.write(Marshal.dump($ids)) }
 			end
 		else
 			m.reply('Denied.')
@@ -101,7 +94,7 @@ end
 
 def bot_quit
 	puts 'Saving...'
-	File.open(File.expand_path('ids'), 'w') { |f| f.write(Marshal.dump($ids)) }
+	File.open('ids.bin', 'w') { |f| f.write(Marshal.dump($ids)) }
 	puts 'Shutting down...'
 	$bot.quit
 end

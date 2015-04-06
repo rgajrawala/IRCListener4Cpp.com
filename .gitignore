@@ -1,8 +1,9 @@
 ##########
 ### Custom
 ##########
-log
-ids
+listener.log
+ids.bin
+config.rb
 
 ##########
 ### OSX

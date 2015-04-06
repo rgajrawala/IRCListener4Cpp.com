@@ -24,6 +24,5 @@
 # SOFTWARE.
 #
 
-echo 'Running...'
-nohup ./listener.rb 2>&1 > log &
-echo 'Executed.'
+nohup ./listener.rb > log 2>&1 &
+echo 'Done.'
